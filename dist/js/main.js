@@ -12,6 +12,9 @@ const EventTypes = {
 	SLEEP: "sleep",
 };
 
+const EVENT_SUFFIX_TOGGLE_START = "_start";
+const EVENT_SUFFIX_TOGGLE_STOP = "_stop";
+
 
 // Common functions
 
@@ -46,6 +49,20 @@ const trackEvent = (type) => {
 
 	// When tracking a new event, undos are cleared
 	setFutureEventList([]);
+};
+
+const trackEventToggle = (type) => {
+	const eventTypeStart = type + EVENT_SUFFIX_TOGGLE_START;
+	const eventTypeStop = type + EVENT_SUFFIX_TOGGLE_STOP;
+	const pastEventList = getPastEventList();
+	const lastStartEventIndex = pastEventList.findIndex((e) => e.type === eventTypeStart);
+	const lastStopEventIndex = pastEventList.findIndex((e) => e.type === eventTypeStop);
+	const eventHasStarted = lastStartEventIndex > -1 && lastStartEventIndex > lastStopEventIndex;
+	if (eventHasStarted) {
+		trackEvent(eventTypeStop);
+	} else {
+		trackEvent(eventTypeStart);
+	}
 };
 
 const undoTrack = () => {
