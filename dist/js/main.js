@@ -137,6 +137,8 @@ const start = () => {
 
 // Finally, initialize
 
-start();
+setTimeout(() => {
+	start();
+}, 0);
 
 console.log("Started.");
