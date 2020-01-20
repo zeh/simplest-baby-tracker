@@ -59,17 +59,21 @@ const trackEvent = (type) => {
 	requestUIUpdate();
 };
 
-const trackEventToggle = (type) => {
+const isToggleableEventStarted = (type) => {
 	const eventTypeStart = type + EVENT_SUFFIX_TOGGLE_START;
 	const eventTypeStop = type + EVENT_SUFFIX_TOGGLE_STOP;
-	const pastEventListReverse = getPastEventList().reverse();
+	const pastEventListReverse = getPastEventList().concat().reverse();
 	const lastStartEventDistance = pastEventListReverse.findIndex((e) => e.type === eventTypeStart);
 	const lastStopEventDistance = pastEventListReverse.findIndex((e) => e.type === eventTypeStop);
-	const eventHasStarted = lastStartEventDistance > -1 && (lastStopEventDistance === -1 || lastStartEventDistance < lastStopEventDistance);
+	return lastStartEventDistance > -1 && (lastStopEventDistance === -1 || lastStartEventDistance < lastStopEventDistance);
+};
+
+const trackEventToggle = (type) => {
+	const eventHasStarted = isToggleableEventStarted(type);
 	if (eventHasStarted) {
-		trackEvent(eventTypeStop);
+		trackEvent(type + EVENT_SUFFIX_TOGGLE_STOP);
 	} else {
-		trackEvent(eventTypeStart);
+		trackEvent(type + EVENT_SUFFIX_TOGGLE_START);
 	}
 };
 
