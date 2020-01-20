@@ -113,7 +113,7 @@ const getAbsoluteTime = (time) => {
 	const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Set", "Oct", "Nov", "Dec" ];
 	const formattedDay = `${months[time.getMonth()]} ${time.getDate()}`;
 	const formattedTime =
-		("00" + (((time.getHours() - 1) % 12) + 1)).substr(-2, 2) +
+		(((time.getHours() - 1) % 12) + 1) +
 		":" +
 		("00" + time.getMinutes()).substr(-2, 2) +
 		(time.getHours() >= 12 ? "PM" : "AM");
