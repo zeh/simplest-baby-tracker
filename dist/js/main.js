@@ -62,10 +62,10 @@ const trackEvent = (type) => {
 const trackEventToggle = (type) => {
 	const eventTypeStart = type + EVENT_SUFFIX_TOGGLE_START;
 	const eventTypeStop = type + EVENT_SUFFIX_TOGGLE_STOP;
-	const pastEventList = getPastEventList();
-	const lastStartEventIndex = pastEventList.findIndex((e) => e.type === eventTypeStart);
-	const lastStopEventIndex = pastEventList.findIndex((e) => e.type === eventTypeStop);
-	const eventHasStarted = lastStartEventIndex > -1 && lastStartEventIndex > lastStopEventIndex;
+	const pastEventListReverse = getPastEventList().reverse();
+	const lastStartEventDistance = pastEventListReverse.findIndex((e) => e.type === eventTypeStart);
+	const lastStopEventDistance = pastEventListReverse.findIndex((e) => e.type === eventTypeStop);
+	const eventHasStarted = lastStartEventDistance > -1 && (lastStopEventDistance === -1 || lastStartEventDistance < lastStopEventDistance);
 	if (eventHasStarted) {
 		trackEvent(eventTypeStop);
 	} else {
