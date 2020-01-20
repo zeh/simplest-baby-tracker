@@ -5,6 +5,8 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	color: #000000;
 	background-color: #ffffff;
+	-webkit-user-select: none;
+	user-select: none;
 }
 
 .root {
@@ -13,28 +15,43 @@ body {
 	left: 0;
 	right: 0;
 	bottom: 0;
+	padding: 20px;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+}
+
+.root > .title {
+	font-size: 80%;
+	letter-spacing: 0.1em;
+	text-align: center;
+	text-transform: uppercase;
+	color: #333333;
+	margin-bottom: 5vh;
 }
 
 .root > .list {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
+	margin-bottom: 5vh;
 }
 
 .root > .list > .item {
 	flex: 0 1 50%;
+	width: 50%;
+	max-width: 50%;
 	padding: 2em 0;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	cursor: pointer;
+	outline: 0;
 }
 
 .root > .list > .item > .icon {
-	font-size: 500%;
+	font-size: 400%;
 }
 
 .root > .list > .item > .label {
