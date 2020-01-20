@@ -104,11 +104,95 @@ const resetData = () => {
 	requestUIUpdate();
 };
 
+const getAbsoluteTime = (time) => {
+	const MILISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
+	const now = new Date();
+	const startDayNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	const startDayTime = new Date(time.getFullYear(), time.getMonth(), time.getDate());
+	const daysAgo = Math.round((startDayNow.getTime() - startDayTime.getTime()) / MILISECONDS_IN_DAY);
+	const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Set", "Oct", "Nov", "Dec" ];
+	const formattedDay = `${months[time.getMonth()]} ${time.getDate()}`;
+	const formattedTime =
+		("00" + (((time.getHours() - 1) % 12) + 1)).substr(-2, 2) +
+		":" +
+		("00" + time.getMinutes()).substr(-2, 2) +
+		(time.getHours() >= 12 ? "PM" : "AM");
+	if (daysAgo === 0) {
+		// Today
+		return formattedTime;
+	} else if (daysAgo === 1) {
+		// Yesterday
+		return `Yesterday, ${formattedTime}`;
+	} else {
+		// Days ago
+		return `${formattedDay}, ${formattedTime}`;
+	}
+};
+
+const getRelativeTime = (time) => {
+	const now = new Date(Date.now());
+	const diff = now.getTime() - time.getTime();
+
+	const diffSeconds = diff / 1000;
+	const diffMinutes = diffSeconds / 60;
+	const diffHours = diffMinutes / 60;
+	const diffDays = diffMinutes / 24;
+
+	if (diffSeconds < 60) {
+		return "Just now";
+	} else if (diffMinutes < 60) {
+		const mm = Math.floor(diffMinutes);
+		return `${mm} minute${mm > 1 ? "s" : ""} ago`;
+	} else {
+		const hh = Math.floor(diffHours);
+		const mm = Math.floor(diffMinutes % 60);
+		if (mm > 0) {
+			return `${hh} hour${hh > 1 ? "s" : ""}, ${mm} minute${mm > 1 ? "s" : ""} ago`;
+		} else {
+			return `${hh} hour${hh > 1 ? "s" : ""} ago`;
+		}
+	}
+};
+
 
 // App functions
 
+const updateElementWithEventTime = (elementQuery, type, label) => {
+	const statusElement = document.querySelector(`${elementQuery} .status`);
+	if (statusElement) {
+		const pastEventListReverse = getPastEventList().concat().reverse();
+		const lastEvent = pastEventListReverse.find((e) => e.type === type);
+		if (lastEvent) {
+			const time = new Date(lastEvent.time);
+			statusElement.innerHTML = `${getAbsoluteTime(time)}<br>${getRelativeTime(time)}`;
+		} else {
+			statusElement.innerHTML = "Not tracked yet<br>";
+		}
+		if (label) {
+			const labelElement = document.querySelector(`${elementQuery} .label`);
+			if (labelElement) {
+				labelElement.innerHTML = label;
+			}
+		}
+	} else {
+		console.warn(`Element not found for query "${elementQuery}"`);
+	}
+};
+
+const updateElementWithToggableEventTime = (elementQuery, type, startLabel, stopLabel) => {
+	const eventHasStarted = isToggleableEventStarted(type);
+	if (eventHasStarted) {
+		updateElementWithEventTime(elementQuery, type + EVENT_SUFFIX_TOGGLE_START, stopLabel);
+	} else {
+		updateElementWithEventTime(elementQuery, type + EVENT_SUFFIX_TOGGLE_STOP, startLabel);
+	}
+};
+
 const updateUI = () => {
-	// TODO
+	updateElementWithEventTime("#poopButton", EventTypes.POOP);
+	updateElementWithEventTime("#peeButton", EventTypes.PEE);
+	updateElementWithEventTime("#feedButton", EventTypes.FEED);
+	updateElementWithToggableEventTime("#sleepButton", EventTypes.SLEEP, "Started sleep", "Woke up");
 };
 
 const requestUIUpdate = () => {
