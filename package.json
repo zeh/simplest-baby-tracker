@@ -1,0 +1,10 @@
+{
+  "name": "simplest-baby-tracker",
+  "version": "1.0.0",
+  "description": "Simplest baby tracker",
+  "main": "index.js",
+  "repository": "https://github.com/zeh/simplest-baby-tracker.git",
+  "author": "Zeh Fernando <zeh@zehfernando.com>",
+  "license": "MIT",
+  "private": false
+}
