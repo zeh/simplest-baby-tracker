@@ -4,6 +4,7 @@ const STORAGE = window.localStorage;
 const STORAGE_ID_PAST_LIST = "pastEventList";
 const STORAGE_ID_FUTURE_LIST = "futureEventList";
 const MAX_EVENT_LIST_ITEMS = 400;
+const UI_UPDATE_INTERVAL = 1000;
 
 const EventTypes = {
 	FEED: "feed",
@@ -14,6 +15,11 @@ const EventTypes = {
 
 const EVENT_SUFFIX_TOGGLE_START = "_start";
 const EVENT_SUFFIX_TOGGLE_STOP = "_stop";
+
+
+// Other global properties
+
+let updateIntervalId = undefined;
 
 
 // Common functions
@@ -49,6 +55,8 @@ const trackEvent = (type) => {
 
 	// When tracking a new event, undos are cleared
 	setFutureEventList([]);
+
+	requestUIUpdate();
 };
 
 const trackEventToggle = (type) => {
@@ -71,6 +79,8 @@ const undoTrack = () => {
 		const undoneEvent = pastEventList.pop();
 		setPastEventList(pastEventList);
 		setFutureEventList([undoneEvent, ...getFutureEventList()]);
+
+		requestUIUpdate();
 	}
 };
 
@@ -80,16 +90,49 @@ const redoTrack = () => {
 		const redoneEvent = futureEventList.shift();
 		setPastEventList([...getPastEventList(), redoneEvent]);
 		setFutureEventList(futureEventList);
+
+		requestUIUpdate();
 	}
 };
 
 const resetData = () => {
 	STORAGE.clear();
+	requestUIUpdate();
 };
 
 
 // App functions
 
-// Initialize
+const updateUI = () => {
+	// TODO
+};
+
+const requestUIUpdate = () => {
+	updateUI();
+	startUIUpdateIntervals();
+};
+
+const stopUIUpdateIntervals = () => {
+	if (updateIntervalId) {
+		clearInterval(updateIntervalId);
+		updateIntervalId = undefined;
+	}
+};
+
+const startUIUpdateIntervals = () => {
+	stopUIUpdateIntervals();
+	updateIntervalId = setInterval(() => {
+		updateUI();
+	}, UI_UPDATE_INTERVAL);
+};
+
+const start = () => {
+	requestUIUpdate();
+};
+
+
+// Finally, initialize
+
+start();
 
 console.log("Started.");
