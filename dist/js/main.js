@@ -6,6 +6,9 @@ const STORAGE_ID_FUTURE_LIST = "futureEventList";
 const MAX_EVENT_LIST_ITEMS = 400;
 const UI_UPDATE_INTERVAL = 1000;
 
+let pastEventListSaved = JSON.parse(STORAGE.getItem(STORAGE_ID_PAST_LIST) || "[]");
+let futureEventListSaved = JSON.parse(STORAGE.getItem(STORAGE_ID_FUTURE_LIST) || "[]");
+
 const EventTypes = {
 	FEED: "feed",
 	PEE: "pee",
@@ -25,21 +28,23 @@ let updateIntervalId = undefined;
 // Common functions
 
 const getPastEventList = () => {
-	return JSON.parse(STORAGE.getItem(STORAGE_ID_PAST_LIST) || "[]");
+	return pastEventListSaved;
 };
 
 const setPastEventList = (list) => {
 	// TODO: this might remove valid events if a single event was tracked more than MAX_EVENT_LIST_ITEMS times.
 	// It would be better to have a per-type or hour-based cap instead of a simple list size cap.
-	STORAGE.setItem(STORAGE_ID_PAST_LIST, JSON.stringify(list.slice(-MAX_EVENT_LIST_ITEMS)));
+	pastEventListSaved = list.slice(-MAX_EVENT_LIST_ITEMS);
+	STORAGE.setItem(STORAGE_ID_PAST_LIST, JSON.stringify(pastEventListSaved));
 };
 
 const getFutureEventList = () => {
-	return JSON.parse(STORAGE.getItem(STORAGE_ID_FUTURE_LIST) || "[]");
+	return futureEventListSaved;
 };
 
 const setFutureEventList = (list) => {
-	STORAGE.setItem(STORAGE_ID_FUTURE_LIST, JSON.stringify(list));
+	futureEventListSaved = list;
+	STORAGE.setItem(STORAGE_ID_FUTURE_LIST, JSON.stringify(futureEventListSaved));
 };
 
 const trackEvent = (type) => {
@@ -101,7 +106,7 @@ const redoTrack = () => {
 
 const resetData = () => {
 	STORAGE.clear();
-	requestUIUpdate();
+	location.reload();
 };
 
 const getAbsoluteTime = (time) => {
