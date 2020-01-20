@@ -136,20 +136,19 @@ const getRelativeTime = (time) => {
 	const diffSeconds = diff / 1000;
 	const diffMinutes = diffSeconds / 60;
 	const diffHours = diffMinutes / 60;
-	const diffDays = diffMinutes / 24;
 
 	if (diffSeconds < 60) {
-		return "Just now";
+		return "just now";
 	} else if (diffMinutes < 60) {
 		const mm = Math.floor(diffMinutes);
-		return `${mm} minute${mm > 1 ? "s" : ""} ago`;
+		return `${mm}m ago`;
 	} else {
 		const hh = Math.floor(diffHours);
 		const mm = Math.floor(diffMinutes % 60);
 		if (mm > 0) {
-			return `${hh} hour${hh > 1 ? "s" : ""}, ${mm} minute${mm > 1 ? "s" : ""} ago`;
+			return `${hh}h ${mm}m ago`;
 		} else {
-			return `${hh} hour${hh > 1 ? "s" : ""} ago`;
+			return `${hh}h ago`;
 		}
 	}
 };
@@ -157,34 +156,26 @@ const getRelativeTime = (time) => {
 
 // App functions
 
-const updateElementWithEventTime = (elementQuery, type, label) => {
+const updateElementWithEventTime = (elementQuery, type, preStatus) => {
 	const statusElement = document.querySelector(`${elementQuery} .status`);
 	if (statusElement) {
 		const pastEventListReverse = getPastEventList().concat().reverse();
 		const lastEvent = pastEventListReverse.find((e) => e.type === type);
 		if (lastEvent) {
 			const time = new Date(lastEvent.time);
-			statusElement.innerHTML = `${getAbsoluteTime(time)}<br>${getRelativeTime(time)}`;
+			statusElement.innerHTML = `${preStatus ? preStatus : "Last"} ${getRelativeTime(time)}<br><span class='secondary'>(${getAbsoluteTime(time)})</span>`;
 		} else {
-			statusElement.innerHTML = "Not tracked yet<br>";
-		}
-		if (label) {
-			const labelElement = document.querySelector(`${elementQuery} .label`);
-			if (labelElement) {
-				labelElement.innerHTML = label;
-			}
+			statusElement.innerHTML = "Not tracked yet<br>&nbsp;";
 		}
 	} else {
 		console.warn(`Element not found for query "${elementQuery}"`);
 	}
 };
 
-const updateElementWithToggableEventTime = (elementQuery, type, startLabel, stopLabel) => {
-	const eventHasStarted = isToggleableEventStarted(type);
-	if (eventHasStarted) {
-		updateElementWithEventTime(elementQuery, type + EVENT_SUFFIX_TOGGLE_START, stopLabel);
-	} else {
-		updateElementWithEventTime(elementQuery, type + EVENT_SUFFIX_TOGGLE_STOP, startLabel);
+const setElementVisibility = (elementQuery, visible) => {
+	const element = document.querySelector(elementQuery);
+	if (element) {
+		element.style.display = visible ? "inherit" : "none";
 	}
 };
 
@@ -192,7 +183,17 @@ const updateUI = () => {
 	updateElementWithEventTime("#poopButton", EventTypes.POOP);
 	updateElementWithEventTime("#peeButton", EventTypes.PEE);
 	updateElementWithEventTime("#feedButton", EventTypes.FEED);
-	updateElementWithToggableEventTime("#sleepButton", EventTypes.SLEEP, "Started sleep", "Woke up");
+
+	const sleepEventHasStarted = isToggleableEventStarted(EventTypes.SLEEP);
+
+	setElementVisibility("#sleepStartButton", !sleepEventHasStarted);
+	setElementVisibility("#sleepStopButton", sleepEventHasStarted);
+
+	if (sleepEventHasStarted) {
+		updateElementWithEventTime("#sleepStopButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START, "Fell asleep");
+	} else {
+		updateElementWithEventTime("#sleepStartButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP, "Woke up");
+	}
 };
 
 const requestUIUpdate = () => {
