@@ -15,8 +15,33 @@
 	<meta name="msapplication-TileColor" content="#2d89ef">
 	<meta name="msapplication-config" content="/icons/browserconfig.xml">
 	<meta name="theme-color" content="#ffffff">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
 </head>
 <body>
-  <script src="js/main.js"></script>
+	<script src="js/main.js"></script>
+	<div class="root">
+		<div class="list">
+			<div class="item" onclick="trackEvent(EventTypes.POOP)">
+				<div class="icon">💩</div>
+				<div class="label">Pooped</div>
+				<div class="status">-</div>
+			</div>
+			<div class="item" onclick="trackEvent(EventTypes.PEE)">
+				<div class="icon">💦</div>
+				<div class="label">Peed</div>
+				<div class="status">-</div>
+			</div>
+			<div class="item" onclick="trackEvent(EventTypes.FEED)">
+				<div class="icon">🤱</div>
+				<div class="label">Fed</div>
+				<div class="status">-</div>
+			</div>
+			<div class="item" onclick="trackEventToggle(EventTypes.SLEEP)">
+				<div class="icon">😴</div>
+				<div class="label">Toggle Sleep</div>
+				<div class="status">-</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

@@ -1,0 +1,55 @@
+body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000000;
+	background-color: #ffffff;
+}
+
+.root {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.root > .list {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.root > .list > .item {
+	flex: 0 1 50%;
+	padding: 2em 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	cursor: pointer;
+}
+
+.root > .list > .item > .icon {
+	font-size: 500%;
+}
+
+.root > .list > .item > .label {
+	font-size: 100%;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	text-align: center;
+	font-weight: bold;
+	line-height: 2em;
+}
+
+.root > .list > .item > .status {
+	font-size: 80%;
+	letter-spacing: 0.1em;
+	text-align: center;
+	line-height: 1.6em;
+	color: #999999;
+}
