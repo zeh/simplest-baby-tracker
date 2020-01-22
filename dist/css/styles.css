@@ -35,6 +35,10 @@ body {
 	color: #999999;
 }
 
+.secondary {
+	opacity: 0.5;
+}
+
 
 /* Specific */
 
@@ -119,8 +123,4 @@ body {
 	text-align: center;
 	font-weight: bold;
 	line-height: 2em;
-}
-
-.root > .trackerArea > .list .item > .status > .secondary {
-	opacity: 0.5;
 }
