@@ -9,17 +9,47 @@ body {
 	user-select: none;
 }
 
+.button {
+	cursor: pointer;
+	outline: 0;
+}
+
 .root {
 	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	padding: 20px;
+	padding: 10px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	justify-content: space-between;
+}
+
+/* .root > * {
+	border: 1px solid black;
+} */
+
+.root > .toolbar {
+	display: flex;
+	flex-direction: row;
+}
+
+.root > .toolbar > .button {
+	font-size: 80%;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	text-align: center;
+	font-weight: bold;
+	line-height: 2em;
+	color: #333333;
+	margin-right: 2em;
+	padding: 10px;
+}
+
+.root > .toolbar > .button:last-of-type {
+	margin-right: 0;
 }
 
 .root > .title {
@@ -28,14 +58,12 @@ body {
 	text-align: center;
 	text-transform: uppercase;
 	color: #333333;
-	margin-bottom: 5vh;
 }
 
 .root > .list {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
-	margin-bottom: 5vh;
 }
 
 .root > .list > .item {
@@ -46,8 +74,6 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	cursor: pointer;
-	outline: 0;
 }
 
 .root > .list > .item > .icon {

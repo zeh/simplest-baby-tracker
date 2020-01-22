@@ -89,8 +89,16 @@ const trackEventToggle = (type) => {
 	}
 };
 
+const canUndoTrack = () => {
+	return pastEventList.length > 0;
+};
+
+const canRedoTrack = () => {
+	return futureEventList.length > 0;
+};
+
 const undoTrack = () => {
-	if (pastEventList.length > 0) {
+	if (canUndoTrack()) {
 		const undoneEvent = pastEventList.pop();
 		futureEventList.unshift(undoneEvent);
 
@@ -102,7 +110,7 @@ const undoTrack = () => {
 };
 
 const redoTrack = () => {
-	if (futureEventList.length > 0) {
+	if (canRedoTrack()) {
 		const redoneEvent = futureEventList.shift();
 		pastEventList.push(redoneEvent);
 
@@ -186,6 +194,13 @@ const updateElementWithEventTime = (elementQuery, type, preStatus) => {
 	}
 };
 
+const setElementEnabled = (elementQuery, enabled) => {
+	const element = document.querySelector(elementQuery);
+	if (element) {
+		element.style.opacity = enabled ? "inherit" : "0.4";
+	}
+};
+
 const setElementVisibility = (elementQuery, visible) => {
 	const element = document.querySelector(elementQuery);
 	if (element) {
@@ -194,6 +209,9 @@ const setElementVisibility = (elementQuery, visible) => {
 };
 
 const updateUI = () => {
+	setElementEnabled("#undoButton", canUndoTrack());
+	setElementEnabled("#redoButton", canRedoTrack());
+
 	updateElementWithEventTime("#poopButton", EventTypes.POOP);
 	updateElementWithEventTime("#peeButton", EventTypes.PEE);
 	updateElementWithEventTime("#feedButton", EventTypes.FEED);
