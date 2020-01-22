@@ -1,5 +1,8 @@
 // Constants
 
+const MILISECONDS_IN_HOUR = 24 * 60 * 60 * 1000;
+const MILISECONDS_IN_DAY = MILISECONDS_IN_HOUR * 24;
+
 const STORAGE = window.localStorage;
 const STORAGE_ID_PAST_LIST = "pastEventList";
 const STORAGE_ID_FUTURE_LIST = "futureEventList";
@@ -8,6 +11,7 @@ const UI_UPDATE_INTERVAL = 1000;
 
 let pastEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_PAST_LIST) || "[]");
 let futureEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_FUTURE_LIST) || "[]");
+const MAX_TIME_BEFORE_REFRESH = MILISECONDS_IN_HOUR * 12;
 
 const EventTypes = {
 	FEED: "feed",
@@ -23,6 +27,7 @@ const EVENT_SUFFIX_TOGGLE_STOP = "_stop";
 // Other global properties
 
 let updateIntervalId = undefined;
+let timeStarted = Date.now();
 
 
 // Common functions
@@ -127,7 +132,6 @@ const resetData = () => {
 };
 
 const getAbsoluteTime = (time) => {
-	const MILISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
 	const now = new Date();
 	const startDayNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 	const startDayTime = new Date(time.getFullYear(), time.getMonth(), time.getDate());
@@ -258,6 +262,11 @@ const startUIUpdateIntervals = () => {
 	stopUIUpdateIntervals();
 	updateIntervalId = setInterval(() => {
 		updateUI();
+
+		// If enough time has passed, we reload the page to force the web app to update
+		if (Date.now() - timeStarted > MAX_TIME_BEFORE_REFRESH) {
+			location.reload();
+		}
 	}, UI_UPDATE_INTERVAL);
 };
 
