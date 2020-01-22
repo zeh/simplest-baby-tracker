@@ -1,3 +1,5 @@
+/* Tags */
+
 body {
 	margin: 0;
 	padding: 0;
@@ -9,10 +11,32 @@ body {
 	user-select: none;
 }
 
+
+/* Generic */
+
 .button {
 	cursor: pointer;
 	outline: 0;
 }
+
+.title {
+	font-size: 80%;
+	letter-spacing: 0.1em;
+	text-align: center;
+	text-transform: uppercase;
+	color: #333333;
+}
+
+.status {
+	font-size: 80%;
+	letter-spacing: 0.1em;
+	text-align: center;
+	line-height: 1.6em;
+	color: #999999;
+}
+
+
+/* Specific */
 
 .root {
 	position: absolute;
@@ -52,35 +76,43 @@ body {
 	margin-right: 0;
 }
 
-.root > .title {
-	font-size: 80%;
-	letter-spacing: 0.1em;
-	text-align: center;
-	text-transform: uppercase;
-	color: #333333;
+.root > .babyArea {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
 }
 
-.root > .list {
+.root > .babyArea > .icon {
+	font-size: 800%;
+}
+
+.root > .trackerArea {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.root > .trackerArea > .list {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
 }
 
-.root > .list > .item {
+.root > .trackerArea > .list > .item {
 	flex: 0 1 50%;
 	width: 50%;
 	max-width: 50%;
-	padding: 2em 0;
+	padding: 10px 0;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
-.root > .list > .item > .icon {
+.root > .trackerArea > .list .item > .icon {
 	font-size: 400%;
 }
 
-.root > .list > .item > .label {
+.root > .trackerArea > .list .item > .label {
 	font-size: 100%;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
@@ -89,14 +121,6 @@ body {
 	line-height: 2em;
 }
 
-.root > .list > .item > .status {
-	font-size: 80%;
-	letter-spacing: 0.1em;
-	text-align: center;
-	line-height: 1.6em;
-	color: #999999;
-}
-
-.root > .list > .item > .status > .secondary {
+.root > .trackerArea > .list .item > .status > .secondary {
 	opacity: 0.5;
 }

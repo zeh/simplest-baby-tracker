@@ -209,22 +209,36 @@ const setElementVisibility = (elementQuery, visible) => {
 };
 
 const updateUI = () => {
+	// Toolbar
+
 	setElementEnabled("#undoButton", canUndoTrack());
 	setElementEnabled("#redoButton", canRedoTrack());
+
+	// Baby status
+
+	const isBabySleeping = isToggleableEventStarted(EventTypes.SLEEP);
+	setElementVisibility("#babyStatusAwake", !isBabySleeping);
+	setElementVisibility("#babyStatusAsleep", isBabySleeping);
+
+	if (isBabySleeping) {
+		updateElementWithEventTime("#babyStatusAsleep", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START, "Fell asleep");
+	} else {
+		updateElementWithEventTime("#babyStatusAwake", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP, "Woke up");
+	}
+
+	// Event buttons
 
 	updateElementWithEventTime("#poopButton", EventTypes.POOP);
 	updateElementWithEventTime("#peeButton", EventTypes.PEE);
 	updateElementWithEventTime("#feedButton", EventTypes.FEED);
 
-	const sleepEventHasStarted = isToggleableEventStarted(EventTypes.SLEEP);
+	setElementVisibility("#sleepStartButton", !isBabySleeping);
+	setElementVisibility("#sleepStopButton", isBabySleeping);
 
-	setElementVisibility("#sleepStartButton", !sleepEventHasStarted);
-	setElementVisibility("#sleepStopButton", sleepEventHasStarted);
-
-	if (sleepEventHasStarted) {
-		updateElementWithEventTime("#sleepStopButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START, "Fell asleep");
+	if (isBabySleeping) {
+		updateElementWithEventTime("#sleepStopButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP);
 	} else {
-		updateElementWithEventTime("#sleepStartButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP, "Woke up");
+		updateElementWithEventTime("#sleepStartButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START);
 	}
 };
 

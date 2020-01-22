@@ -26,34 +26,50 @@
 			<div class="button" id="undoButton" onclick="undoTrack()">↶ Undo</div>
 			<div class="button" id="redoButton" onclick="redoTrack()">↷ Redo</div>
 		</div>
-		<div class="title">
-			Select event type to track
+		<div class="babyArea" id="babyStatusAwake">
+			<div class="title">
+				Your baby is awake
+			</div>
+			<div class="icon">😀</div>
+			<div class="status">-</div>
 		</div>
-		<div class="list">
-			<div class="item button" id="poopButton" onclick="trackEvent(EventTypes.POOP)">
-				<div class="icon">💩</div>
-				<div class="label">Pooped</div>
-				<div class="status">-</div>
+		<div class="babyArea" id="babyStatusAsleep">
+			<div class="title">
+				Your baby is asleep
 			</div>
-			<div class="item button" id="peeButton" onclick="trackEvent(EventTypes.PEE)">
-				<div class="icon">💦</div>
-				<div class="label">Peed</div>
-				<div class="status">-</div>
+			<div class="icon">😴</div>
+			<div class="status">-</div>
+		</div>
+		<div class="trackerArea">
+			<div class="title">
+				Select event type to track
 			</div>
-			<div class="item button" id="feedButton" onclick="trackEvent(EventTypes.FEED)">
-				<div class="icon">🤱</div>
-				<div class="label">Fed</div>
-				<div class="status">-</div>
-			</div>
-			<div class="item button" id="sleepStartButton" onclick="trackEventToggle(EventTypes.SLEEP)">
-				<div class="icon">😴</div>
-				<div class="label">Fell asleep</div>
-				<div class="status">-</div>
-			</div>
-			<div class="item button" id="sleepStopButton" onclick="trackEventToggle(EventTypes.SLEEP)">
-				<div class="icon">😀</div>
-				<div class="label">Woke up</div>
-				<div class="status">-</div>
+			<div class="list">
+				<div class="item button" id="poopButton" onclick="trackEvent(EventTypes.POOP)">
+					<div class="icon">💩</div>
+					<div class="label">Pooped</div>
+					<div class="status">-</div>
+				</div>
+				<div class="item button" id="peeButton" onclick="trackEvent(EventTypes.PEE)">
+					<div class="icon">💦</div>
+					<div class="label">Peed</div>
+					<div class="status">-</div>
+				</div>
+				<div class="item button" id="feedButton" onclick="trackEvent(EventTypes.FEED)">
+					<div class="icon">🤱</div>
+					<div class="label">Fed</div>
+					<div class="status">-</div>
+				</div>
+				<div class="item button" id="sleepStartButton" onclick="trackEventToggle(EventTypes.SLEEP)">
+					<div class="icon">😴</div>
+					<div class="label">Fell asleep</div>
+					<div class="status">-</div>
+				</div>
+				<div class="item button" id="sleepStopButton" onclick="trackEventToggle(EventTypes.SLEEP)">
+					<div class="icon">😀</div>
+					<div class="label">Woke up</div>
+					<div class="status">-</div>
+				</div>
 			</div>
 		</div>
 		<div class="footer">
