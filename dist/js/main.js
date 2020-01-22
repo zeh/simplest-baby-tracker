@@ -6,8 +6,8 @@ const STORAGE_ID_FUTURE_LIST = "futureEventList";
 const MAX_EVENT_LIST_ITEMS = 400;
 const UI_UPDATE_INTERVAL = 1000;
 
-let pastEventListSaved = JSON.parse(STORAGE.getItem(STORAGE_ID_PAST_LIST) || "[]");
-let futureEventListSaved = JSON.parse(STORAGE.getItem(STORAGE_ID_FUTURE_LIST) || "[]");
+let pastEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_PAST_LIST) || "[]");
+let futureEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_FUTURE_LIST) || "[]");
 
 const EventTypes = {
 	FEED: "feed",
@@ -27,50 +27,57 @@ let updateIntervalId = undefined;
 
 // Common functions
 
-const getPastEventList = () => {
-	return pastEventListSaved;
+const savePastEventList = () => {
+	// Trim the list if too big
+	if (pastEventList.length > MAX_EVENT_LIST_ITEMS) {
+		// TODO: this might remove valid events if a single event was tracked more than MAX_EVENT_LIST_ITEMS times.
+		// It would be better to have a per-type or hour-based cap instead of a simple list size cap.
+		pastEventList = pastEventList.slice(-MAX_EVENT_LIST_ITEMS);
+	}
+
+	STORAGE.setItem(STORAGE_ID_PAST_LIST, JSON.stringify(pastEventList));
 };
 
-const setPastEventList = (list) => {
-	// TODO: this might remove valid events if a single event was tracked more than MAX_EVENT_LIST_ITEMS times.
-	// It would be better to have a per-type or hour-based cap instead of a simple list size cap.
-	pastEventListSaved = list.slice(-MAX_EVENT_LIST_ITEMS);
-	STORAGE.setItem(STORAGE_ID_PAST_LIST, JSON.stringify(pastEventListSaved));
+const saveFutureEventList = () => {
+	STORAGE.setItem(STORAGE_ID_FUTURE_LIST, JSON.stringify(futureEventList));
 };
 
-const getFutureEventList = () => {
-	return futureEventListSaved;
-};
-
-const setFutureEventList = (list) => {
-	futureEventListSaved = list;
-	STORAGE.setItem(STORAGE_ID_FUTURE_LIST, JSON.stringify(futureEventListSaved));
-};
+const getLastEventIndexOfType = (list, type) => {
+	for (let i = list.length - 1; i >= 0; i--) {
+		if (pastEventList[i].type === type) return i;
+	}
+	return -1;
+}
 
 const trackEvent = (type) => {
-	const newList = [
-		...getPastEventList(),
-		{
-			type: type,
-			time: Date.now(),
-		},
-	];
+	const newEvent = {
+		type: type,
+		time: Date.now(),
+	};
 
-	setPastEventList(newList);
+	pastEventList.push(newEvent);
 
 	// When tracking a new event, undos are cleared
-	setFutureEventList([]);
+	futureEventList = [];
+
+	savePastEventList();
+	saveFutureEventList();
 
 	requestUIUpdate();
 };
 
 const isToggleableEventStarted = (type) => {
-	const eventTypeStart = type + EVENT_SUFFIX_TOGGLE_START;
-	const eventTypeStop = type + EVENT_SUFFIX_TOGGLE_STOP;
-	const pastEventListReverse = getPastEventList().concat().reverse();
-	const lastStartEventDistance = pastEventListReverse.findIndex((e) => e.type === eventTypeStart);
-	const lastStopEventDistance = pastEventListReverse.findIndex((e) => e.type === eventTypeStop);
-	return lastStartEventDistance > -1 && (lastStopEventDistance === -1 || lastStartEventDistance < lastStopEventDistance);
+	let lastStartEventIndex = getLastEventIndexOfType(pastEventList, type + EVENT_SUFFIX_TOGGLE_START);
+	let lastStopEventIndex = getLastEventIndexOfType(pastEventList, type + EVENT_SUFFIX_TOGGLE_STOP);
+
+	// Started, never stopped
+	if (lastStartEventIndex > -1 && lastStopEventIndex === -1) return true;
+
+	// Never started
+	if (lastStartEventIndex === -1) return false;
+
+	// Started and stopped at some point, so decide based on what happened last
+	return lastStartEventIndex > lastStopEventIndex;
 };
 
 const trackEventToggle = (type) => {
@@ -83,22 +90,24 @@ const trackEventToggle = (type) => {
 };
 
 const undoTrack = () => {
-	const pastEventList = getPastEventList().concat();
 	if (pastEventList.length > 0) {
 		const undoneEvent = pastEventList.pop();
-		setPastEventList(pastEventList);
-		setFutureEventList([undoneEvent, ...getFutureEventList()]);
+		futureEventList.unshift(undoneEvent);
+
+		savePastEventList();
+		saveFutureEventList();
 
 		requestUIUpdate();
 	}
 };
 
 const redoTrack = () => {
-	const futureEventList = getFutureEventList().concat();
 	if (futureEventList.length > 0) {
 		const redoneEvent = futureEventList.shift();
-		setPastEventList([...getPastEventList(), redoneEvent]);
-		setFutureEventList(futureEventList);
+		pastEventList.push(redoneEvent);
+
+		savePastEventList();
+		saveFutureEventList();
 
 		requestUIUpdate();
 	}
@@ -164,9 +173,9 @@ const getRelativeTime = (time) => {
 const updateElementWithEventTime = (elementQuery, type, preStatus) => {
 	const statusElement = document.querySelector(`${elementQuery} .status`);
 	if (statusElement) {
-		const pastEventListReverse = getPastEventList().concat().reverse();
-		const lastEvent = pastEventListReverse.find((e) => e.type === type);
-		if (lastEvent) {
+		const lastEventIndex = getLastEventIndexOfType(pastEventList, type);
+		if (lastEventIndex > -1) {
+			const lastEvent = pastEventList[lastEventIndex];
 			const time = new Date(lastEvent.time);
 			statusElement.innerHTML = `${preStatus ? preStatus : "Last"} ${getRelativeTime(time)}<br><span class='secondary'>(${getAbsoluteTime(time)})</span>`;
 		} else {
