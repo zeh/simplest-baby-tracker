@@ -153,27 +153,31 @@ const getAbsoluteTime = (time) => {
 	}
 };
 
-const getRelativeTime = (time) => {
-	const now = new Date(Date.now());
-	const diff = now.getTime() - time.getTime();
+const getIntervalDescription = (timeMS) => {
+	const timeSeconds = timeMS / 1000;
+	const timeMinutes = timeSeconds / 60;
+	const timeHours = timeMinutes / 60;
 
-	const diffSeconds = diff / 1000;
-	const diffMinutes = diffSeconds / 60;
-	const diffHours = diffMinutes / 60;
-
-	if (diffSeconds < 60) {
-		return "just now";
-	} else if (diffMinutes < 60) {
-		const mm = Math.floor(diffMinutes);
-		return `${mm}m ago`;
+	if (timeMinutes < 60) {
+		const mm = Math.floor(timeMinutes);
+		return `${mm}m`;
 	} else {
-		const hh = Math.floor(diffHours);
-		const mm = Math.floor(diffMinutes % 60);
+		const hh = Math.floor(timeHours);
+		const mm = Math.floor(timeMinutes % 60);
 		if (mm > 0) {
-			return `${hh}h ${mm}m ago`;
+			return `${hh}h ${mm}m`;
 		} else {
-			return `${hh}h ago`;
+			return `${hh}h`;
 		}
+	}
+};
+
+const getRelativeTime = (time) => {
+	const diff = Date.now() - time.getTime();
+	if (diff < 60 * 1000) {
+		return "just now";
+	} else {
+		return `${getIntervalDescription(diff)} ago`;
 	}
 };
 
