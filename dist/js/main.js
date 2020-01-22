@@ -6,11 +6,10 @@ const MILISECONDS_IN_DAY = MILISECONDS_IN_HOUR * 24;
 const STORAGE = window.localStorage;
 const STORAGE_ID_PAST_LIST = "pastEventList";
 const STORAGE_ID_FUTURE_LIST = "futureEventList";
+const EVENT_SUFFIX_TOGGLE_START = "_start";
+const EVENT_SUFFIX_TOGGLE_STOP = "_stop";
 const MAX_EVENT_LIST_ITEMS = 400;
 const UI_UPDATE_INTERVAL = 1000;
-
-let pastEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_PAST_LIST) || "[]");
-let futureEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_FUTURE_LIST) || "[]");
 const MAX_TIME_BEFORE_REFRESH = MILISECONDS_IN_HOUR * 12;
 
 const EventTypes = {
@@ -20,12 +19,11 @@ const EventTypes = {
 	SLEEP: "sleep",
 };
 
-const EVENT_SUFFIX_TOGGLE_START = "_start";
-const EVENT_SUFFIX_TOGGLE_STOP = "_stop";
-
 
 // Other global properties
 
+let pastEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_PAST_LIST) || "[]");
+let futureEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_FUTURE_LIST) || "[]");
 let updateIntervalId = undefined;
 let timeStarted = Date.now();
 
