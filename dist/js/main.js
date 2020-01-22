@@ -180,7 +180,7 @@ const getRelativeTime = (time) => {
 
 // App functions
 
-const updateElementWithEventTime = (elementQuery, type, preStatus) => {
+const updateElementStatusWithEvent = (elementQuery, type, preStatus) => {
 	const statusElement = document.querySelector(`${elementQuery} .status`);
 	if (statusElement) {
 		const lastEventIndex = getLastEventIndexOfType(pastEventList, type);
@@ -223,24 +223,24 @@ const updateUI = () => {
 	setElementVisibility("#babyStatusAsleep", isBabySleeping);
 
 	if (isBabySleeping) {
-		updateElementWithEventTime("#babyStatusAsleep", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START, "Fell asleep");
+		updateElementStatusWithEvent("#babyStatusAsleep", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START, "Fell asleep");
 	} else {
-		updateElementWithEventTime("#babyStatusAwake", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP, "Woke up");
+		updateElementStatusWithEvent("#babyStatusAwake", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP, "Woke up");
 	}
 
 	// Event buttons
 
-	updateElementWithEventTime("#poopButton", EventTypes.POOP);
-	updateElementWithEventTime("#peeButton", EventTypes.PEE);
-	updateElementWithEventTime("#feedButton", EventTypes.FEED);
+	updateElementStatusWithEvent("#poopButton", EventTypes.POOP);
+	updateElementStatusWithEvent("#peeButton", EventTypes.PEE);
+	updateElementStatusWithEvent("#feedButton", EventTypes.FEED);
 
 	setElementVisibility("#sleepStartButton", !isBabySleeping);
 	setElementVisibility("#sleepStopButton", isBabySleeping);
 
 	if (isBabySleeping) {
-		updateElementWithEventTime("#sleepStopButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP);
+		updateElementStatusWithEvent("#sleepStopButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP);
 	} else {
-		updateElementWithEventTime("#sleepStartButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START);
+		updateElementStatusWithEvent("#sleepStartButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START);
 	}
 };
 
