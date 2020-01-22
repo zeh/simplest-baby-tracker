@@ -39,6 +39,12 @@ body {
 	opacity: 0.5;
 }
 
+.tertiary {
+	text-transform: uppercase;
+	font-size: 90%;
+	font-weight: bold;
+}
+
 
 /* Specific */
 

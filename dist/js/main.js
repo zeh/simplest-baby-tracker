@@ -19,6 +19,12 @@ const EventTypes = {
 	SLEEP: "sleep",
 };
 
+const StatusTypes = {
+	EVENT_COUNT: "eventCount",
+	NONE: "none",
+	TOTAL_TIME: "totalTime",
+};
+
 
 // Other global properties
 
@@ -50,6 +56,42 @@ const getLastEventIndexOfType = (list, type) => {
 		if (pastEventList[i].type === type) return i;
 	}
 	return -1;
+}
+
+const getTotalEventTime = (type, dayOffset, maxTime = -1) => {
+	const now = new Date(Date.now());
+	const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOffset);
+	const endTime = maxTime > 0 ? maxTime : new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOffset + 1);
+
+	const startType = type + EVENT_SUFFIX_TOGGLE_START;
+	const stopType = type + EVENT_SUFFIX_TOGGLE_STOP;
+
+	let totalTimeMS = 0;
+	let lastStartTime = -1;
+
+	pastEventList.forEach((e) => {
+		if (e.time >= startTime && e.time <= endTime) {
+			if (e.type === stopType) {
+				// Stopping
+				if (lastStartTime < 0) {
+					// Never started on this day, so assume started at midnight
+					totalTimeMS += e.time - startTime;
+				} else {
+					totalTimeMS += e.time - lastStartTime;
+				}
+			} else if (e.type === startType) {
+				lastStartTime = e.time;
+			}
+		} else {
+			if (lastStartTime > 0) {
+				// Started and never stopped, so assume ended at midnight
+				totalTimeMS += endTime - lastStartTime;
+				lastStartTime = -1;
+			}
+		}
+	});
+
+	return totalTimeMS;
 }
 
 const trackEvent = (type) => {
@@ -181,20 +223,42 @@ const getRelativeTime = (time) => {
 	}
 };
 
+const getEventCountForDay = (type, dayOffset) => {
+	const now = new Date(Date.now());
+	const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOffset);
+	const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOffset + 1);
+	return pastEventList.filter((e) => e.type === type && e.time >= startTime && e.time <= endTime).length;
+};
+
 
 // App functions
 
-const updateElementStatusWithEvent = (elementQuery, type, preStatus) => {
+const updateElementStatusWithEvent = (elementQuery, type, preStatus, statusType = StatusTypes.EVENT_COUNT) => {
 	const statusElement = document.querySelector(`${elementQuery} .status`);
 	if (statusElement) {
 		const lastEventIndex = getLastEventIndexOfType(pastEventList, type);
+		let lines = [ "Not tracked yet", "&nbsp;", "&nbsp;" ];
 		if (lastEventIndex > -1) {
 			const lastEvent = pastEventList[lastEventIndex];
 			const time = new Date(lastEvent.time);
-			statusElement.innerHTML = `${preStatus ? preStatus : "Last"} ${getRelativeTime(time)}<br><span class='secondary'>(${getAbsoluteTime(time)})</span>`;
-		} else {
-			statusElement.innerHTML = "Not tracked yet<br>&nbsp;";
+			lines[0] = `${preStatus ? preStatus : "Last"} ${getRelativeTime(time)}`;
+			lines[1] = `<span class='secondary'>(${getAbsoluteTime(time)})</span>`;
+
+			if (statusType === StatusTypes.EVENT_COUNT) {
+				// Show count
+				const numTimesToday = getEventCountForDay(type, 0);
+				const numTimesYesterday = getEventCountForDay(type, -1);
+
+				if (numTimesToday > 0) {
+					lines[2] = `<span class='tertiary'>${numTimesToday} today / ${numTimesYesterday} yday</span>`;
+				}
+			} else if (statusType === StatusTypes.TOTAL_TIME) {
+				const rootType = type.substr(0, type.length - (type.endsWith(EVENT_SUFFIX_TOGGLE_START) ? EVENT_SUFFIX_TOGGLE_START.length : EVENT_SUFFIX_TOGGLE_STOP.length));
+				const time = getTotalEventTime(rootType, 0, Date.now());
+				lines[2] = `<span class='tertiary'>Total ${getIntervalDescription(time)} today</span>`;
+			}
 		}
+		statusElement.innerHTML = lines.join("<br>");
 	} else {
 		console.warn(`Element not found for query "${elementQuery}"`);
 	}
@@ -227,9 +291,9 @@ const updateUI = () => {
 	setElementVisibility("#babyStatusAsleep", isBabySleeping);
 
 	if (isBabySleeping) {
-		updateElementStatusWithEvent("#babyStatusAsleep", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START, "Fell asleep");
+		updateElementStatusWithEvent("#babyStatusAsleep", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START, "Fell asleep", StatusTypes.TOTAL_TIME);
 	} else {
-		updateElementStatusWithEvent("#babyStatusAwake", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP, "Woke up");
+		updateElementStatusWithEvent("#babyStatusAwake", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP, "Woke up", StatusTypes.TOTAL_TIME);
 	}
 
 	// Event buttons
