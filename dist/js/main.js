@@ -171,13 +171,17 @@ const resetData = () => {
 	location.reload();
 };
 
+const getFormattedDay = (date) => {
+	const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Set", "Oct", "Nov", "Dec" ];
+	return `${months[date.getMonth()]} ${date.getDate()}`;
+};
+
 const getAbsoluteTime = (time) => {
 	const now = new Date();
 	const startDayNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 	const startDayTime = new Date(time.getFullYear(), time.getMonth(), time.getDate());
 	const daysAgo = Math.round((startDayNow.getTime() - startDayTime.getTime()) / MILISECONDS_IN_DAY);
-	const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Set", "Oct", "Nov", "Dec" ];
-	const formattedDay = `${months[time.getMonth()]} ${time.getDate()}`;
+	const formattedDay = getFormattedDay(time);
 	const formattedTime =
 		(((time.getHours() - 1) % 12) + 1) +
 		":" +
