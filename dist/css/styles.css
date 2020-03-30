@@ -94,6 +94,7 @@ body {
 
 .root > .babyArea > .icon {
 	font-size: 800%;
+	text-align: center;
 }
 
 .root > .trackerArea {
