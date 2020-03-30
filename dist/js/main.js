@@ -97,7 +97,7 @@ const getTotalEventTime = (type, dayOffset, maxTime = -1) => {
 const trackEvent = (type) => {
 	const newEvent = {
 		type: type,
-		time: Date.now(),
+		time: Date.now(), // To track previous days: getDateWithOffset(dayViewOffset).getTime(),
 	};
 
 	pastEventList.push(newEvent);
