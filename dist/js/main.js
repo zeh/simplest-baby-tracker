@@ -229,8 +229,8 @@ const getRelativeTime = (time) => {
 
 const getEventCountForDay = (type, dayOffset) => {
 	const now = new Date(Date.now());
-	const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOffset);
-	const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOffset + 1);
+	const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset).getTime();
+	const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset + 1).getTime();
 	return pastEventList.filter((e) => e.type === type && e.time >= startTime && e.time <= endTime).length;
 };
 
