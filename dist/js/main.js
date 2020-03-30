@@ -301,15 +301,6 @@ const updateUI = () => {
 	updateElementStatusWithEvent("#poopButton", EventTypes.POOP);
 	updateElementStatusWithEvent("#peeButton", EventTypes.PEE);
 	updateElementStatusWithEvent("#feedButton", EventTypes.FEED);
-
-	setElementVisibility("#sleepStartButton", !isBabySleeping);
-	setElementVisibility("#sleepStopButton", isBabySleeping);
-
-	if (isBabySleeping) {
-		updateElementStatusWithEvent("#sleepStopButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP);
-	} else {
-		updateElementStatusWithEvent("#sleepStartButton", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START);
-	}
 };
 
 const requestUIUpdate = () => {
