@@ -169,6 +169,11 @@ const redoTrack = () => {
 	}
 };
 
+const offsetDay = (num) => {
+	dayViewOffset = Math.min(dayViewOffset + num, 0);
+	requestUIUpdate();
+};
+
 const resetData = () => {
 	STORAGE.clear();
 	location.reload();
@@ -276,6 +281,19 @@ const updateElementStatusWithEvent = (elementQuery, type, preStatus, statusType 
 	}
 };
 
+const updateElementWithDate = (elementQuery) => {
+	const labelElement = document.querySelector(`${elementQuery}`);
+	if (labelElement) {
+		const date = getDateWithOffset(dayViewOffset);
+		const formattedDay = getFormattedDay(date);
+		if (dayViewOffset === 0) {
+			labelElement.innerHTML = `${formattedDay} (TODAY)`;
+		} else {
+			labelElement.innerHTML = formattedDay;
+		}
+	}
+};
+
 const setElementEnabled = (elementQuery, enabled) => {
 	const element = document.querySelector(elementQuery);
 	if (element) {
@@ -299,10 +317,14 @@ const updateUI = () => {
 	// Baby status
 
 	const isBabySleeping = isToggleableEventStarted(EventTypes.SLEEP);
-	setElementVisibility("#babyStatusAwake", !isBabySleeping);
-	setElementVisibility("#babyStatusAsleep", isBabySleeping);
+	const showingToday = dayViewOffset === 0;
+	const shouldShowBabySleeping = isBabySleeping || !showingToday;
+	setElementVisibility("#babyStatusAwake", !shouldShowBabySleeping);
+	setElementVisibility("#babyStatusAsleep", shouldShowBabySleeping);
 
-	if (isBabySleeping) {
+	if (!showingToday) {
+		updateElementStatusWithEvent("#babyStatusAsleep", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START);
+	} else if (isBabySleeping) {
 		updateElementStatusWithEvent("#babyStatusAsleep", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_START, "Fell asleep", StatusTypes.TOTAL_TIME);
 	} else {
 		updateElementStatusWithEvent("#babyStatusAwake", EventTypes.SLEEP + EVENT_SUFFIX_TOGGLE_STOP, "Woke up", StatusTypes.TOTAL_TIME);
@@ -313,6 +335,10 @@ const updateUI = () => {
 	updateElementStatusWithEvent("#poopButton", EventTypes.POOP);
 	updateElementStatusWithEvent("#peeButton", EventTypes.PEE);
 	updateElementStatusWithEvent("#feedButton", EventTypes.FEED);
+
+	// Footer
+	updateElementWithDate("#dateLabel");
+	setElementEnabled("#dayPlusButton", dayViewOffset < 0);
 };
 
 const requestUIUpdate = () => {

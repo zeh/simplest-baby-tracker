@@ -68,6 +68,8 @@ body {
 .root > .toolbar {
 	display: flex;
 	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 }
 
 .root > .toolbar > .button {
@@ -78,12 +80,21 @@ body {
 	font-weight: bold;
 	line-height: 2em;
 	color: #333333;
-	margin-right: 2em;
+	margin: 0 1em;
 	padding: 10px;
 }
 
-.root > .toolbar > .button:last-of-type {
-	margin-right: 0;
+.root > .toolbar > .label {
+	font-size: 90%;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	text-align: center;
+	font-weight: bold;
+	color: #000000;
+}
+
+.root > .footer > .label {
+	flex: 0 0 50%;
 }
 
 .root > .babyArea {
