@@ -32,6 +32,7 @@ let pastEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_PAST_LIST) || "[]");
 let futureEventList = JSON.parse(STORAGE.getItem(STORAGE_ID_FUTURE_LIST) || "[]");
 let updateIntervalId = undefined;
 let timeStarted = Date.now();
+let dayViewOffset = 0; // -1 = looking at yesterday
 
 
 // Common functions
@@ -51,9 +52,11 @@ const saveFutureEventList = () => {
 	STORAGE.setItem(STORAGE_ID_FUTURE_LIST, JSON.stringify(futureEventList));
 };
 
-const getLastEventIndexOfType = (list, type) => {
+const getLastEventIndexOfType = (list, type, dayOffset = 0) => {
+	const maxTime = getDateWithOffset(dayOffset + 1).getTime();
 	for (let i = list.length - 1; i >= 0; i--) {
-		if (pastEventList[i].type === type) return i;
+		const event = pastEventList[i];
+		if (event.type === type && event.time <= maxTime) return i;
 	}
 	return -1;
 }
@@ -234,13 +237,18 @@ const getEventCountForDay = (type, dayOffset) => {
 	return pastEventList.filter((e) => e.type === type && e.time >= startTime && e.time <= endTime).length;
 };
 
+const getDateWithOffset = (dayOffset) => {
+	const now = new Date(Date.now());
+	return new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset);
+};
+
 
 // App functions
 
 const updateElementStatusWithEvent = (elementQuery, type, preStatus, statusType = StatusTypes.EVENT_COUNT) => {
 	const statusElement = document.querySelector(`${elementQuery} .status`);
 	if (statusElement) {
-		const lastEventIndex = getLastEventIndexOfType(pastEventList, type);
+		const lastEventIndex = getLastEventIndexOfType(pastEventList, type, dayViewOffset);
 		let lines = [ "Not tracked yet", "&nbsp;", "&nbsp;" ];
 		if (lastEventIndex > -1) {
 			const lastEvent = pastEventList[lastEventIndex];
@@ -250,16 +258,16 @@ const updateElementStatusWithEvent = (elementQuery, type, preStatus, statusType 
 
 			if (statusType === StatusTypes.EVENT_COUNT) {
 				// Show count
-				const numTimesToday = getEventCountForDay(type, 0);
-				const numTimesYesterday = getEventCountForDay(type, -1);
+				const numTimesToday = getEventCountForDay(type, dayViewOffset);
 
 				if (numTimesToday > 0) {
-					lines[2] = `<span class='tertiary'>${numTimesToday} today / ${numTimesYesterday} yday</span>`;
+					lines[2] = `<span class='tertiary'>${numTimesToday} times</span>`;
 				}
 			} else if (statusType === StatusTypes.TOTAL_TIME) {
 				const rootType = type.substr(0, type.length - (type.endsWith(EVENT_SUFFIX_TOGGLE_START) ? EVENT_SUFFIX_TOGGLE_START.length : EVENT_SUFFIX_TOGGLE_STOP.length));
-				const time = getTotalEventTime(rootType, 0, Date.now());
-				lines[2] = `<span class='tertiary'>Total ${getIntervalDescription(time)} today</span>`;
+				const time = getTotalEventTime(rootType, dayViewOffset, Date.now());
+				const dayLabel = dayViewOffset === 0 ? " today" : "";
+				lines[2] = `<span class='tertiary'>Total ${getIntervalDescription(time)}${dayLabel}</span>`;
 			}
 		}
 		statusElement.innerHTML = lines.join("<br>");
